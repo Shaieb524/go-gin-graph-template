@@ -5,12 +5,12 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/joud-cxu/hackernews/graph/generated"
 	"github.com/joud-cxu/hackernews/graph/model"
 	"github.com/joud-cxu/hackernews/internal/links"
+	"github.com/joud-cxu/hackernews/internal/users"
 )
 
 func (r *mutationResolver) CreateLink(ctx context.Context, input model.NewLink) (*model.Link, error) {
@@ -21,16 +21,12 @@ func (r *mutationResolver) CreateLink(ctx context.Context, input model.NewLink) 
 	return &model.Link{ID: strconv.FormatInt(linkID, 10), Title: link.Title, Address: link.Address}, nil
 }
 
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (string, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *mutationResolver) RefreshToken(ctx context.Context, input model.RefreshTokenInput) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
+	var user users.User
+	user.Username = input.Username
+	user.Password = input.Password
+	userID := user.Save()
+	return &model.User{ID: strconv.FormatInt(userID, 10), Name: user.Username}, nil
 }
 
 func (r *queryResolver) Links(ctx context.Context) ([]*model.Link, error) {
@@ -43,6 +39,16 @@ func (r *queryResolver) Links(ctx context.Context) ([]*model.Link, error) {
 	return resultLinks, nil
 }
 
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	var resultUsers []*model.User
+	var dbUsers []users.User
+	dbUsers = users.GetAll()
+	for _, user := range dbUsers {
+		resultUsers = append(resultUsers, &model.User{ID: user.ID, Name: user.Username})
+	}
+	return resultUsers, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
@@ -51,10 +57,3 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
