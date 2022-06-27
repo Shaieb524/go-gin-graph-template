@@ -49,6 +49,15 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	return resultUsers, nil
 }
 
+func (r *queryResolver) UserByID(ctx context.Context, id string) (*model.User, error) {
+	var resultUser *model.User
+	var dbUser *users.User
+	// TODO pass id from request context
+	dbUser, _ = users.GetUserById("3")
+	resultUser = &model.User{ID: dbUser.ID, Name: dbUser.Username}
+	return resultUser, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

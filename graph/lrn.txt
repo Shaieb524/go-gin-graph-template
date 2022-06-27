@@ -1,0 +1,80 @@
+#__________________________________________________________________________
+
+#type object_type_name
+#{
+#field1: data_type
+#}
+
+type Link {
+  id: ID!
+  title: String!
+  address: String!
+  user: User!
+}
+
+type User {
+  id: ID!
+  name: String!
+}
+
+input NewLink {
+  title: String!
+  address: String!
+}
+
+input NewUser {
+  username: String!
+  password: String!
+}
+
+#input RefreshTokenInput{
+#  token: String!
+#}
+
+
+#input Login {
+#  username: String!
+#  password: String!
+#}
+#____________________________________________________________________________________________
+
+#type Query {
+#field1: data_type
+#field2(param1:data_type,param2:data_type,...paramN:data_type):data_type
+#}
+
+type Query {
+  links: [Link!]!
+  users: [User]!
+  userById(id: ID!): User
+}
+#________________________________________________________________________________________________
+
+#type Mutation {
+#field1: data_type
+#field2(param1:data_type,param2:data_type,...paramN:data_type):data_type
+#}
+
+type Mutation {
+  createLink(input: NewLink!): Link!
+  createUser(input: NewUser!): User!
+  # login(input: Login!): String!
+  # refreshToken(input: RefreshTokenInput!): String!
+}
+#________________________________________________________________________________________________
+
+#type enum_name{
+#value1
+#value2
+#}
+
+type Days_of_Week{
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+#________________________________________________________________________________________________

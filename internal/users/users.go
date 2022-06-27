@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"log"
 
 	database "github.com/joud-cxu/hackernews/internal/pkg/db/migrations/mysql"
@@ -58,4 +59,23 @@ func GetAll() []User {
 		log.Fatal(err)
 	}
 	return users
+}
+
+func GetUserById(id string) (*User, error) {
+	fmt.Println("IDDDDDDD L ", id)
+	stmt, err := database.Db.Prepare("select * from Users where id = ?")
+	if err != nil {
+		fmt.Println("er111111111111111111111 : ", err)
+		log.Fatal(err)
+	}
+	var user User
+
+	err2 := stmt.QueryRow(id).Scan(&user.ID, &user.Username, &user.Password)
+	if err2 != nil {
+		fmt.Println("er222222222222 : ", err2)
+		log.Fatal(err2)
+		return &user, err2
+	}
+	fmt.Println("USERrrrrr : /", user)
+	return &user, nil
 }
